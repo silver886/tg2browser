@@ -26,11 +26,21 @@ func main() {
 	wg.Add(1)
 	go func() {
 		for {
+			// Initialize Telegram bot
+			logMain.Debugln("Initialize Telegram bot . . .")
+			if err := telegramInit(); err != nil {
+				logMain.WithError(err).Errorln("Cannot initialize Telegram bot")
+				continue
+			}
+
+			// Start Telegram bot
 			logMain.Infoln("Start Telegram bot . . .")
-			tg()
-			logMain.Infoln("Telegram bot has stopped")
+			telegram()
+
+			// Stop Telegram bot
+			logMain.Infoln("Stop Telegram bot . . .")
+			telegramStop()
 		}
-		wg.Done()
 	}()
 
 	wg.Wait()

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	log   *logger.Logger
-	tgBot *tgbotapi.BotAPI
+	log         *logger.Logger
+	telegramBot *tgbotapi.BotAPI
 
 	debug bool
 )
@@ -42,13 +42,6 @@ func init() {
 		logInit.WithError(err).Errorln("Cannot setup OS signal handler")
 		exit(9)
 	}
-
-	// Init tg
-	logInit.Debugln("Init tg . . .")
-	if err := tgInit(); err != nil {
-		logInit.WithError(err).Errorln("Cannot init tg")
-		exit(9)
-	}
 }
 
 func flagInit() error {
@@ -58,18 +51,15 @@ func flagInit() error {
 	// Parse arguments
 	flag.Parse()
 
-	// Update debug mode
+	// Upgrade debug mode
 	if debug {
+		logFlagInit.Debugln("Upgrade logger . . .")
 		log.Wait()
 		log.Config(
 			logrus.Level(len(logrus.AllLevels)-1),
 			logrus.AllLevels,
 			false,
 		)
-		logFlagInit.Debugln("Update logger")
-
-		tgBot.Debug = true
-		logFlagInit.Debugln("Update Telegram bot")
 	}
 
 	logFlagInit.WithFields(logrus.Fields{
