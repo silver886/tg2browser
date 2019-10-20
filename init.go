@@ -3,12 +3,14 @@ package main
 import (
 	"flag"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/silver886/logger"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	log *logger.Logger
+	log         *logger.Logger
+	telegramBot *tgbotapi.BotAPI
 
 	debug bool
 )
@@ -30,7 +32,16 @@ func init() {
 		false,
 	)
 
-	log.WithField("prefix", "init").Debugln("Create logger")
+	logInit := log.WithField("prefix", "init")
+
+	logInit.Debugln("Create logger")
+
+	// Setup OS signal handler
+	logInit.Debugln("Setup OS signal handler . . .")
+	if err := exitInit(); err != nil {
+		logInit.WithError(err).Errorln("Cannot setup OS signal handler")
+		exit(9)
+	}
 }
 
 func flagInit() error {
@@ -40,14 +51,15 @@ func flagInit() error {
 	// Parse arguments
 	flag.Parse()
 
+	// Upgrade debug mode
 	if debug {
+		logFlagInit.Debugln("Upgrade logger . . .")
 		log.Wait()
 		log.Config(
-			logrus.TraceLevel,
+			logrus.Level(len(logrus.AllLevels)-1),
 			logrus.AllLevels,
 			false,
 		)
-		logFlagInit.Debugln("Update logger")
 	}
 
 	logFlagInit.WithFields(logrus.Fields{
