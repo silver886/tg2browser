@@ -32,6 +32,9 @@ func exit(code int) {
 
 	logExit.WithField("exit_code", code).Infoln("Exiting program . . .")
 
+	// Stop Telegram bot
+	telegramStop()
+
 	// Exit program with exit code
 	logExit.WithField("exit_code", code).Debugln("Exit . . .")
 	// Wait logger completed
