@@ -18,28 +18,33 @@ func telegramEntity(m *tgbotapi.Message) {
 			if _, err := url.ParseRequestURI(entityRaw); err != nil {
 				entityRaw = "http://" + entityRaw
 			}
-
-			msg := tgbotapi.NewMessage(m.Chat.ID, entityRaw+" is a valid URL, send mechanism still under developing . . .")
-			msg.ReplyToMessageID = m.MessageID
-			telegramBot.Send(msg)
+			send(m, entityRaw+" is a valid URL")
 
 			logTelegramEntity.Infoln("Valid URL:", entityRaw)
-			// case "mention":
-			// 	logTelegramEntity.Debugln("I found a mention:", entityRaw)
-			// case "hashtag":
-			// 	logTelegramEntity.Debugln("I found a hashtag:", entityRaw)
-			// case "email":
-			// 	logTelegramEntity.Debugln("I found a email:", entityRaw)
-			// case "phone_number":
-			// 	logTelegramEntity.Debugln("I found a phone_number:", entityRaw)
-			// case "code":
-			// 	logTelegramEntity.Debugln("I found a code:", entityRaw)
-			// case "pre":
-			// 	logTelegramEntity.Debugln("I found a pre:", entityRaw)
-			// case "text_link":
-			// 	logTelegramEntity.Debugln("I found a text_link:", e.URL)
-			// case "text_mention":
-			// 	logTelegramEntity.Debugln("I found a text_mention:", e.User)
+		case "mention":
+			send(m, "https://t.me/"+entityRaw[1:]+" is a valid user name")
+
+			logTelegramEntity.Infoln("User ID:", entityRaw[1:])
+		case "email":
+			send(m, entityRaw+" is a valid email")
+
+			logTelegramEntity.Infoln("Email:", entityRaw)
+		case "code":
+			send(m, entityRaw+" is a code line")
+
+			logTelegramEntity.Infoln("Code line:", entityRaw)
+		case "pre":
+			send(m, entityRaw+" is a code block")
+
+			logTelegramEntity.Infoln("Code block:", entityRaw)
+		case "text_link":
+			send(m, e.URL+" is a valid URL")
+
+			logTelegramEntity.Debugln("I found a text_link:", e.URL)
+		case "text_mention":
+			send(m, e.User.String()+" is a valid user")
+
+			logTelegramEntity.Infoln("User:", e.User)
 		}
 	}
 }
