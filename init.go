@@ -3,14 +3,12 @@ package main
 import (
 	"flag"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/silver886/logger"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	log         *logger.Logger
-	telegramBot *tgbotapi.BotAPI
+	log *logger.Logger
 
 	debug bool
 )
