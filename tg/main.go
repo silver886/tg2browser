@@ -1,7 +1,6 @@
 package tg
 
 import (
-	"fmt"
 	"t2b/tg/msg"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -30,11 +29,10 @@ func Main() error {
 			// 	}
 			// }
 			if update.Message.Entities != nil {
-				entities := msg.GetEntities(update.Message)
-				for _, e := range entities {
-					m := fmt.Sprintf("This is a %v, and content is %v.", e.Type, e.Content)
-					send(update.Message, m)
-					logMain.Infof(m)
+				msgs := msg.GetEntities(update.Message)
+				for _, m := range msgs {
+					logMain.Infof(m.Text)
+					send(m)
 				}
 			}
 			// if update.Message.Text != "" {

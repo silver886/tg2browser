@@ -30,8 +30,8 @@ const (
 )
 
 // GetEntities return all the entities in one message.
-func GetEntities(m *tgbotapi.Message) []*Entity {
-	entities := []*Entity{}
+func GetEntities(m *tgbotapi.Message) []*tgbotapi.MessageConfig {
+	msgs := []*tgbotapi.MessageConfig{}
 	for _, e := range *m.Entities {
 		entityRaw := string([]rune(m.Text)[e.Offset : e.Offset+e.Length])
 		switch e.Type {
@@ -39,41 +39,61 @@ func GetEntities(m *tgbotapi.Message) []*Entity {
 			if _, err := url.ParseRequestURI(entityRaw); err != nil {
 				entityRaw = "http://" + entityRaw
 			}
-			entities = append(entities, &Entity{
-				Type:    EntityTypeURL,
-				Content: entityRaw,
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeURL,
+					Content: entityRaw,
+				}),
+			)
 		case EntityTypeMention:
-			entities = append(entities, &Entity{
-				Type:    EntityTypeMention,
-				Content: "https://t.me/" + entityRaw[1:],
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeMention,
+					Content: "https://t.me/" + entityRaw[1:],
+				}),
+			)
 		case EntityTypeEmail:
-			entities = append(entities, &Entity{
-				Type:    EntityTypeEmail,
-				Content: entityRaw,
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeEmail,
+					Content: entityRaw,
+				}),
+			)
 		case EntityTypeCode:
-			entities = append(entities, &Entity{
-				Type:    EntityTypeCode,
-				Content: entityRaw,
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeCode,
+					Content: entityRaw,
+				}),
+			)
 		case EntityTypePre:
-			entities = append(entities, &Entity{
-				Type:    EntityTypePre,
-				Content: entityRaw,
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypePre,
+					Content: entityRaw,
+				}),
+			)
 		case EntityTypeTextLink:
-			entities = append(entities, &Entity{
-				Type:    EntityTypeTextLink,
-				Content: e.URL,
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeTextLink,
+					Content: e.URL,
+				}),
+			)
 		case EntityTypeTextMention:
-			entities = append(entities, &Entity{
-				Type:    EntityTypeTextMention,
-				Content: e.User.String(),
-			})
+			msgs = append(msgs, entityMsg(m,
+				&Entity{
+					Type:    EntityTypeTextMention,
+					Content: e.User.String(),
+				}),
+			)
 		}
 	}
-	return entities
+	return msgs
+}
+
+func entityMsg(m *tgbotapi.Message, e *Entity) *tgbotapi.MessageConfig {
+	msg := tgbotapi.NewMessage(m.Chat.ID, "A part of your typed content, "+e.Content+", was identified as an entity, "+e.Type)
+	msg.ReplyToMessageID = m.MessageID
+	return &msg
 }
