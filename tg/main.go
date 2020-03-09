@@ -1,15 +1,20 @@
 package tg
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+import (
+	"fmt"
+	"t2b/tg/msg"
 
-// Start kicks off the commnuication to telegram.
-func Start() error {
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
+
+// Main kicks off the commnuication to telegram.
+func Main() error {
 	// Set logger prefix
-	logTelegram := log.WithField("prefix", "telegram")
+	logMain := log.WithField("prefix", "main")
 
 	// Get updates from Telegram
 	if updates, err := telegramBot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: 60}); err != nil {
-		logTelegram.WithError(err).Errorln("Cannot get updates from Telegram")
+		logMain.WithError(err).Errorln("Cannot get updates from Telegram")
 		return err
 	} else {
 		for update := range updates {
@@ -25,55 +30,58 @@ func Start() error {
 			// 	}
 			// }
 			if update.Message.Entities != nil {
-				telegramEntity(update.Message)
+				t, v := msg.Entity(update.Message)
+				m := fmt.Sprintf("This is a %v, and content is %v.", t, v)
+				send(update.Message, m)
+				logMain.Infof(m)
 			}
 			// if update.Message.Text != "" {
 			// 	telegramText(update.Message)
 			// }
 			// if update.Message.Audio != nil {
-			// 	logTelegram.Traceln("Audio")
+			// 	logMain.Traceln("Audio")
 			// 	// tgBotAudio()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Audio.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Audio,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Document != nil {
-			// 	logTelegram.Traceln("Document")
+			// 	logMain.Traceln("Document")
 			// 	// tgBotDocument()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Document.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Document,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Animation != nil {
-			// 	logTelegram.Traceln("Animation")
+			// 	logMain.Traceln("Animation")
 			// 	// tgBotAnimation()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Animation.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Animation,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Game != nil {
-			// 	logTelegram.Traceln("Game")
+			// 	logMain.Traceln("Game")
 			// 	// tgBotGame()
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Game,
 			// 	)
 			// }
 			// if update.Message.Photo != nil {
-			// 	logTelegram.Traceln("Photo")
+			// 	logMain.Traceln("Photo")
 			// 	// tgBotPhoto()
-			// 	logTelegram.Debugln(update.Message.Photo)
+			// 	logMain.Debugln(update.Message.Photo)
 			// 	for i, p := range *update.Message.Photo {
 			// 		url, err := telegramBot.GetFileDirectURL(p.FileID)
-			// 		logTelegram.Debugln(
+			// 		logMain.Debugln(
 			// 			i,
 			// 			p,
 			// 			url,
@@ -82,69 +90,69 @@ func Start() error {
 			// 	}
 			// }
 			// if update.Message.Sticker != nil {
-			// 	logTelegram.Traceln("Sticker")
+			// 	logMain.Traceln("Sticker")
 			// 	// tgBotSticker()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Sticker.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Sticker,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Video != nil {
-			// 	logTelegram.Traceln("Video")
+			// 	logMain.Traceln("Video")
 			// 	// tgBotVideo()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Video.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Video,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Voice != nil {
-			// 	logTelegram.Traceln("Voice")
+			// 	logMain.Traceln("Voice")
 			// 	// tgBotVoice()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.Voice.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.Voice,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.VideoNote != nil {
-			// 	logTelegram.Traceln("VideoNote")
+			// 	logMain.Traceln("VideoNote")
 			// 	// tgBotVideoNote()
 			// 	url, err := telegramBot.GetFileDirectURL(update.Message.VideoNote.FileID)
-			// 	logTelegram.Debugln(
+			// 	logMain.Debugln(
 			// 		update.Message.VideoNote,
 			// 		url,
 			// 		err,
 			// 	)
 			// }
 			// if update.Message.Contact != nil {
-			// 	logTelegram.Traceln("Contact")
+			// 	logMain.Traceln("Contact")
 			// 	// tgBotContact()
-			// 	logTelegram.Debugln(update.Message.Contact)
+			// 	logMain.Debugln(update.Message.Contact)
 			// }
 			// if update.Message.Location != nil {
-			// 	logTelegram.Traceln("Location")
+			// 	logMain.Traceln("Location")
 			// 	// tgBotLocation()
-			// 	logTelegram.Debugln(update.Message.Location)
+			// 	logMain.Debugln(update.Message.Location)
 			// }
 			// if update.Message.Venue != nil {
-			// 	logTelegram.Traceln("Venue")
+			// 	logMain.Traceln("Venue")
 			// 	// tgBotVenue()
-			// 	logTelegram.Debugln(update.Message.Venue)
+			// 	logMain.Debugln(update.Message.Venue)
 			// }
 			// if update.Message.Invoice != nil {
-			// 	logTelegram.Traceln("Invoice")
+			// 	logMain.Traceln("Invoice")
 			// 	// tgBotInvoice()
-			// 	logTelegram.Debugln(update.Message.Invoice)
+			// 	logMain.Debugln(update.Message.Invoice)
 			// }
 			// if update.Message.SuccessfulPayment != nil {
-			// 	logTelegram.Traceln("SuccessfulPayment")
+			// 	logMain.Traceln("SuccessfulPayment")
 			// 	// tgBotSuccessfulPayment()
-			// 	logTelegram.Debugln(update.Message.SuccessfulPayment)
+			// 	logMain.Debugln(update.Message.SuccessfulPayment)
 			// }
 		}
 	}
