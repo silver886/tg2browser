@@ -1,6 +1,10 @@
 package main
 
-import "sync"
+import (
+	"os"
+	"sync"
+	"t2b/tg"
+)
 
 const (
 	appName    = "T2B"
@@ -28,18 +32,18 @@ func main() {
 		for {
 			// Initialize Telegram bot
 			logMain.Debugln("Initialize Telegram bot . . .")
-			if err := telegramInit(); err != nil {
+			if err := tg.Init(log, os.Getenv("TG_BOT_KEY"), debug); err != nil {
 				logMain.WithError(err).Errorln("Cannot initialize Telegram bot")
 				continue
 			}
 
 			// Start Telegram bot
 			logMain.Infoln("Start Telegram bot . . .")
-			telegram()
+			tg.Start()
 
 			// Stop Telegram bot
 			logMain.Infoln("Stop Telegram bot . . .")
-			telegramStop()
+			tg.Stop()
 		}
 	}()
 

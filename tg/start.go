@@ -1,56 +1,16 @@
-package main
+package tg
 
-import (
-	"errors"
-	"os"
+import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-)
-
-func telegramInit() error {
-	// Set logger prefix
-	logTelegramInit := log.WithField("prefix", "telegramInit")
-
-	// Set logger for Telegram bot
-	logTelegramInit.Debugln("Set logger for Telegram bot . . .")
-	tgbotapi.SetLogger(log.WithField("prefix", "telegramBot"))
-
-	// Connect Telegram API
-	logTelegramInit.Debugln("Connect Telegram API . . .")
-	if bot, err := tgbotapi.NewBotAPI(os.Getenv("TG_BOT_KEY")); err == nil {
-		telegramBot = bot
-	} else {
-		return err
-	}
-
-	// Upgrade debug mode
-	if debug {
-		logTelegramInit.Debugln("Upgrade Telegram bot . . .")
-		telegramBot.Debug = true
-	}
-
-	return nil
-}
-
-func telegramStop() error {
-	if telegramBot != nil {
-		log.WithField("prefix", "telegramStop").Debugln("Stop Telegram bot . . .")
-		telegramBot.StopReceivingUpdates()
-		telegramBot = nil
-	} else {
-		return errors.New("Telegram bot has stopped")
-	}
-	return nil
-}
-
-func telegram() {
+// Start kicks off the commnuication to telegram.
+func Start() error {
 	// Set logger prefix
 	logTelegram := log.WithField("prefix", "telegram")
 
 	// Get updates from Telegram
 	if updates, err := telegramBot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: 60}); err != nil {
 		logTelegram.WithError(err).Errorln("Cannot get updates from Telegram")
-		exit(116)
+		return err
 	} else {
 		for update := range updates {
 			// Ignore non-message Updates
@@ -188,4 +148,5 @@ func telegram() {
 			// }
 		}
 	}
+	return nil
 }

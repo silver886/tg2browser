@@ -1,4 +1,4 @@
-package main
+package tg
 
 // if u, err := url.ParseRequestURI(update.Message.Text); err == nil {
 // 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, u.String())

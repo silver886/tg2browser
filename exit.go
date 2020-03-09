@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"t2b/tg"
 
 	"github.com/sirupsen/logrus"
 )
@@ -33,7 +34,7 @@ func exit(code int) {
 	logExit.WithField("exit_code", code).Infoln("Exiting program . . .")
 
 	// Stop Telegram bot
-	telegramStop()
+	tg.Stop()
 
 	// Exit program with exit code
 	logExit.WithField("exit_code", code).Debugln("Exit . . .")
