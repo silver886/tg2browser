@@ -30,10 +30,12 @@ func Main() error {
 			// 	}
 			// }
 			if update.Message.Entities != nil {
-				t, v := msg.Entity(update.Message)
-				m := fmt.Sprintf("This is a %v, and content is %v.", t, v)
-				send(update.Message, m)
-				logMain.Infof(m)
+				entities := msg.GetEntities(update.Message)
+				for _, e := range entities {
+					m := fmt.Sprintf("This is a %v, and content is %v.", e.Type, e.Content)
+					send(update.Message, m)
+					logMain.Infof(m)
+				}
 			}
 			// if update.Message.Text != "" {
 			// 	telegramText(update.Message)
