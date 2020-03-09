@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"sync"
 	"t2b/tg"
 )
 
@@ -23,30 +22,21 @@ func main() {
 		exit(11)
 	}
 
-	// Create wait group for services
-	wg := &sync.WaitGroup{}
-
 	// Telegram bot
-	wg.Add(1)
-	go func() {
-		for {
-			// Initialize Telegram bot
-			logMain.Debugln("Initialize Telegram bot . . .")
-			if err := tg.Init(log, os.Getenv("TG_BOT_KEY"), debug); err != nil {
-				logMain.WithError(err).Errorln("Cannot initialize Telegram bot")
-				continue
-			}
-
-			// Start Telegram bot
-			logMain.Infoln("Start Telegram bot . . .")
-			tg.Start()
-
-			// Stop Telegram bot
-			logMain.Infoln("Stop Telegram bot . . .")
-			tg.Stop()
+	for {
+		// Initialize Telegram bot
+		logMain.Debugln("Initialize Telegram bot . . .")
+		if err := tg.Init(log, os.Getenv("TG_BOT_KEY"), debug); err != nil {
+			logMain.WithError(err).Errorln("Cannot initialize Telegram bot")
+			continue
 		}
-	}()
 
-	wg.Wait()
-	exit(0)
+		// Start Telegram bot
+		logMain.Infoln("Start Telegram bot . . .")
+		tg.Main()
+
+		// Stop Telegram bot
+		logMain.Infoln("Stop Telegram bot . . .")
+		tg.Stop()
+	}
 }
