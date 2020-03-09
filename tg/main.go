@@ -35,9 +35,11 @@ func Main() error {
 					send(m)
 				}
 			}
-			// if update.Message.Text != "" {
-			// 	telegramText(update.Message)
-			// }
+			if update.Message.Text != "" {
+				m := msg.GetText(update.Message)
+				logMain.Infof(m.Text)
+				send(m)
+			}
 			// if update.Message.Audio != nil {
 			// 	logMain.Traceln("Audio")
 			// 	// tgBotAudio()
